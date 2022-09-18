@@ -1,30 +1,31 @@
 <?php 
 // get text id
-include "includ/config.php";
-$id=$_GET['pid'];
+include 
+"includ/config.php";
+  $id = $_GET['pid'];
 
 // search
-if(isset($_POST['search'])){
+if (isset($_POST['search'])){
   $tex=$_POST['tex'];
-  $_SESSION['search']=$tex;
+  $_SESSION['search'] = $tex;
   header("Location:search.php");
 }
 // login admin
 if (isset($_POST['login'])){
-  $name=$_POST['name'];
-  $pass=$_POST['password'];
+  $name = $_POST['name'];
+  $pass = $_POST['password'];
 	if (empty ($_POST['name'])){
 		echo("<script>alert('null name!! ')</script>");
 	}
-  elseif(empty($_POST['password'])){
+  elseif (empty($_POST['password'])){
     echo("<script>alert('null password!! ')</script>");
   }
-  else{
-    if($name==ADMINUSER && $pass==PASSWORD){
+  else {
+    if ($name == ADMINUSER && $pass == PASSWORD){
       header("Location:admin/index.php");
     }
-    else{
-      echo("<script>alert('you are not admin')</script>");
+    else {
+      echo "<script>alert('you are not admin')</script>";
     }
   }
 }
@@ -89,6 +90,7 @@ if (isset($_POST['login'])){
 <!-- products -->
 
 <?php 
+
 
 
 
