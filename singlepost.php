@@ -1,31 +1,52 @@
 <?php 
-// get text id
-include 
-"includ/config.php";
-  $id = $_GET['pid'];
-// search
-if (isset($_POST['search'])){
-  $tex = $_POST['tex'];
-  $_SESSION['search'] = $tex;
-  header("Location:search.php");
-}
-// login admin
-if (isset($_POST['login'])){
-  $name = $_POST['name'];
-  $pass = $_POST['password'];
-	if (empty ($_POST['name'])){
-		echo("<script>alert('null name!! ')</script>");
-	}
-  elseif (empty($_POST['password'])){
-    echo("<script>alert('null password!! ')</script>");
+  include 
+  "includ/config.php";
+  // get text id
+  if(isset($_GET['pid'])){
+    $id = $_GET['pid'];
   }
-  else {
-    if ($name == ADMINUSER && $pass == PASSWORD){
-      header("Location:admin/index.php");
+  // form search
+  if (isset($_POST['search'])){
+    $tex = $_POST['tex'];
+    $_SESSION['search'] = $tex;
+    header("Location:search.php");
+  }
+  // form login
+  if (isset($_POST['login'])){
+    $name = $_POST['name'];
+    $pass = $_POST['password'];
+  	if (empty ($_POST['name'])){
+  		echo("<script>alert('null name!! ')</script>");
+  	}
+    elseif (empty($_POST['password'])){
+      echo("<script>alert('null password!! ')</script>");
     }
     else {
-      echo "<script>alert('you are not admin')</script>";
+      if ($name == ADMINUSER && $pass == PASSWORD){
+        header("Location:admin/index.php");
+      }
+      else {
+        echo "<script>alert('you are not admin')</script>";
+      }
     }
+  }
+  // form register
+if (isset($_POST['register'])){
+  if (empty ($_POST['name'])){
+    echo("<script>alert('null name!! ')</script>");
+  }
+  elseif (empty ($_POST['password'])){
+    echo("<script>alert('null password!! ')</script>");
+  }
+  else{
+    $username=$_POST['name'];
+    $Password=$_POST['password'];
+    $sql="INSERT INTO `users`(`username` , `password`) VALUES (? , ?)";
+    $stmt=$db->prepare($sql);
+    $stmt->bindvalue(1 , "$username");
+    $stmt->bindvalue(2 , "$Password");
+    $stmt->execute();
+    echo("<script>alert('register ok!! ')</script>");
   }
 }
 ?>
@@ -56,25 +77,65 @@ if (isset($_POST['login'])){
         <!-- category -->
       <nav aria-label = "...">
         <ul class = "pagination pagination-sm">
-          <!-- <li class = "page-item disabled">
-            <a class = "page-link" href = "#" tabindex = "-1">1</a>
-          </li> -->
           <li class = "page-item col-sm-4"><a class = "page-link" href = "category.php?pid = 1">1</a></li>
           <li class = "page-item col-sm-4"><a class = "page-link" href = "category.php?pid = 2">2</a></li>
           <li class = "page-item col-sm-4"><a class = "page-link" href = "category.php?pid = 3">3</a></li>
         </ul>
       </nav>
-      <hr style = "background-color:white;" >
-      <!-- from admin login -->
-      <form method = "POST">
-        <div class = "form-group">
-          <input type = "text" class = "form-control" id = "exampleInputEmail1" aria-describedby = "emailHelp" placeholder = "Enter name" name = "name">
+      <hr style = "background-color:white;" > 
+      <!-- form login user -->
+      <p>
+  <a class="btn btn-primary" data-toggle="collapse" href="#multiCollapseExample1" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">Toggle first element</a>
+  <!-- <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#multiCollapseExample2" aria-expanded="false" aria-controls="multiCollapseExample2">Toggle second element</button>
+  <button class="btn btn-primary" type="button" data-toggle="collapse" data-target=".multi-collapse" aria-expanded="false" aria-controls="multiCollapseExample1 multiCollapseExample2">Toggle both elements</button> -->
+      </p>
+    <div class="row">
+      <div class="col">
+        <div class="collapse multi-collapse" id="multiCollapseExample1">
+          <div class="card card-body">
+          <form method = "POST">
+            <div class = "form-group">
+              <input type = "text" class = "form-control" id = "exampleInputEmail1" aria-describedby = "emailHelp" placeholder = "Enter name" name = "name">
+            </div>
+            <div class = "form-group">
+              <input type = "password" class = "form-control" id = "exampleInputPassword1" placeholder = "Enter password" name = "password">
+            </div>
+            <button type = "submit" class = "btn btn-outline-primary" name = "register">register</button>
+          </form>
+          </div>
+          <div class="card card-body">
+          <form method = "POST">
+            <div class = "form-group">
+              <input type = "text" class = "form-control" id = "exampleInputEmail1" aria-describedby = "emailHelp" placeholder = "Enter name" name = "name">
+            </div>
+            <div class = "form-group">
+              <input type = "password" class = "form-control" id = "exampleInputPassword1" placeholder = "Enter password" name = "password">
+            </div>
+            <button type = "submit" class = "btn btn-outline-primary" name = "login">login</button>
+          </form>
+          </div>
         </div>
-        <div class = "form-group">
-          <input type = "password" class = "form-control" id = "exampleInputPassword1" placeholder = "Enter password" name = "password">
-        </div>
-        <button type = "submit" class = "btn btn-outline-primary" name = "login">login</button>
-      </form>
+      </div>
+
+
+
+
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       <hr style = "background-color:white;" >
           </div>
         </div>
@@ -85,6 +146,7 @@ if (isset($_POST['login'])){
           </button>
         </nav>
       </div>
+
 </header>
 <!-- products -->
 <?php
@@ -95,17 +157,29 @@ if (isset($_POST['login'])){
     foreach ($search as $row){
     ?>
     <div class = "row" style = 
-    "float:left;
-    margin:26px;
-    border:2px solid;">
-    <div class = "card" style = "width: 100%;">
-      <img class = "card-img-top" src = "<?php echo $row['images'] ?>" alt = "Card image cap">
-      <div class = "card-body">
-        <h5 class = "card-title"><?php echo $row['title'] ?></h5>
-        <p class = "card-text"><?php echo $row['body'] ?></p>
-        <p class = "card-text" style = "float:right;"><?php echo $row['category'] ?></p>
+      "float:left;
+      margin:26px;
+      border:2px solid;">
+      <div class = "card" style = "width: 100%;">
+        <img class = "card-img-top" src = "<?php echo $row['images'] ?>" alt = "Card image cap">
+        <div class = "card-body">
+          <h5 class = "card-title"><?php echo $row['title'] ?></h5>
+          <p class = "card-text"><?php echo $row['body'] ?></p>
+          <p class = "card-text" style = "float:right;"><?php echo $row['category'] ?></p>
+        </div>
       </div>
-    </div>
+      <!-- form comment -->
+      <form class=" col-sm-12" method="POST">
+        <div class="form-group">
+          <label for="exampleInputEmail1">Username</label>
+          <input type="text" class="form-control" id="exampleInputEmail1" placeholder="Enter username" name="username">
+        </div>
+        <div class="form-group">
+          <label for="exampleInputPassword1">Password</label>
+          <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Enter password" name="pass">
+        </div>
+        <button type="submit" class="btn btn-outline-primary" name="com">Send</button>
+      </form>
     </div>
 <?php } ?>
 <script src = "asset/js/jquery.min.js"></script>
